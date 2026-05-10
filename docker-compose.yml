@@ -1,0 +1,10 @@
+services:
+  discord-voice-rotator:
+    build: .
+    container_name: discord-voice-rotator
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs

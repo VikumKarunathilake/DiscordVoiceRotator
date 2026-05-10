@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# DiscordVoiceRotator runtime data
+logs/*.log
+config/guilds.json
