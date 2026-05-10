@@ -70,6 +70,7 @@ class RotationService:
                 delay_seconds=delay,
                 mode=config.mode,
                 original_channel_id=member.voice.channel.id,
+                last_channel_id=member.voice.channel.id,
             )
             task = asyncio.create_task(
                 self._rotation_loop(member, status),
@@ -136,6 +137,16 @@ class RotationService:
                         status.guild_id,
                         status.user_id,
                     )
+                    return
+
+                if member.voice.channel.id != status.last_channel_id:
+                    LOGGER.info(
+                        "Stopping rotation because user manually moved guild=%s user=%s",
+                        status.guild_id,
+                        status.user_id,
+                    )
+                    # Don't move back if they manually moved
+                    status.original_channel_id = None
                     return
 
                 channel = self._select_channel(member, status, index)

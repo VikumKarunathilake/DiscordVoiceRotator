@@ -11,6 +11,7 @@ DiscordVoiceRotator is a production-ready Python Discord bot that rotates a sele
 - Persistent channel, delay, and mode configuration stored in `config/guilds.json`.
 - Random or sequential voice rotation modes.
 - Moves the user back to their original voice channel automatically when the rotation is stopped.
+- Automatically stops the rotation if the user manually moves to a different voice channel.
 - Minimum delay of 1 second to prevent unsafe move spam.
 - Duplicate rotation prevention per guild/user pair.
 - Graceful handling for disconnected users, missing channels, missing permissions, Discord API errors, and shutdown.
