@@ -142,6 +142,42 @@ class RotationCommands(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(
+        name="delay", description="Update the rotation delay for this server."
+    )
+    @app_commands.guild_only()
+    @app_commands.default_permissions(move_members=True)
+    async def delay(
+        self,
+        interaction: discord.Interaction,
+        seconds: app_commands.Range[float, MIN_ROTATION_DELAY_SECONDS, 86400.0],
+    ) -> None:
+        if not await self._can_manage_rotations(interaction):
+            return
+        if interaction.guild is None:
+            await self._send_error(
+                interaction, "This command can only be used in a server."
+            )
+            return
+
+        config = await self.store.get_guild(interaction.guild.id)
+        if config is None:
+            await self._send_error(
+                interaction,
+                "Configure the bot first with `/setchannels`.",
+            )
+            return
+
+        config.delay_seconds = float(seconds)
+        await self.store.set_guild(config)
+
+        embed = build_embed(
+            "Delay Updated",
+            f"Rotation delay set to `{config.delay_seconds:.1f}s`.",
+            SUCCESS_COLOR,
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @app_commands.command(
         name="setchannels",
         description="Configure channels, delay, and mode for this server.",
     )

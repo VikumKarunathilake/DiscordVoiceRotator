@@ -28,6 +28,7 @@ class RotationStatus:
     started_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     moves_completed: int = 0
     last_channel_id: int | None = None
+    original_channel_id: int | None = None
     last_error: str | None = None
 
 
@@ -68,6 +69,7 @@ class RotationService:
                 channel_ids=list(config.channel_ids),
                 delay_seconds=delay,
                 mode=config.mode,
+                original_channel_id=member.voice.channel.id,
             )
             task = asyncio.create_task(
                 self._rotation_loop(member, status),
@@ -167,6 +169,29 @@ class RotationService:
         ) as exc:  # noqa: BLE001 - keep long-running task failures contained.
             status.last_error = str(exc)
             LOGGER.exception("Unexpected rotation failure")
+        finally:
+            # Move member back to original channel if they are still connected
+            if (
+                status.original_channel_id
+                and member.voice
+                and member.voice.channel
+                and member.voice.channel.id != status.original_channel_id
+            ):
+                original_channel = member.guild.get_channel(status.original_channel_id)
+                if isinstance(
+                    original_channel, (discord.VoiceChannel, discord.StageChannel)
+                ):
+                    try:
+                        await member.move_to(
+                            original_channel,
+                            reason="DiscordVoiceRotator rotation stopped; returning to original channel",
+                        )
+                    except (discord.Forbidden, discord.HTTPException):
+                        LOGGER.warning(
+                            "Could not move member back to original channel guild=%s user=%s",
+                            status.guild_id,
+                            status.user_id,
+                        )
 
     def _select_channel(
         self,
