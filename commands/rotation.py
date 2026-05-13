@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
