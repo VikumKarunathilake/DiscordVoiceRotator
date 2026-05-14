@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Literal
 
 RotationMode = Literal["sequential", "random"]
-MIN_ROTATION_DELAY_SECONDS = 1.0
+MIN_ROTATION_DELAY_SECONDS = 3.0
 DEFAULT_ROTATION_DELAY_SECONDS = 3.0
 
 

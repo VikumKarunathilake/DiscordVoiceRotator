@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
@@ -327,6 +326,8 @@ class RotationCommands(commands.Cog):
                 )
             if not channel.permissions_for(bot_member).move_members:
                 return f"I need `Move Members` permission in {channel.mention}."
+            if not channel.permissions_for(member).connect:
+                return f"The selected user does not have permission to connect to {channel.mention}."
         return None
 
     def _format_status(self, status: RotationStatus) -> str:

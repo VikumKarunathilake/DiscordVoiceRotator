@@ -1,0 +1,4 @@
+## 2024-05-14 - Prevented authorization bypass for restricted voice channels
+**Vulnerability:** A moderator with `Move Members` permission could configure the bot to move a regular user into restricted (e.g., Admin-only) voice channels that the user did not have permission to `Connect` to.
+**Learning:** When writing commands that move users into voice channels, verifying the bot's `Move Members` permission is not enough. We must also verify the target member's `Connect` permission for the destination channels, otherwise the bot acts as a privilege escalation vector.
+**Prevention:** Always check `channel.permissions_for(member).connect` before programmatically moving members across Discord channels.
