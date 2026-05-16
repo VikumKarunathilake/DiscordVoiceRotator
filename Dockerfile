@@ -20,4 +20,9 @@ RUN uv pip install --no-cache -r requirements.txt
 COPY . .
 RUN mkdir -p logs config
 
+RUN groupadd -r appuser && useradd -r -g appuser appuser \
+    && chown -R appuser:appuser /app
+
+USER appuser
+
 CMD ["python", "bot.py"]

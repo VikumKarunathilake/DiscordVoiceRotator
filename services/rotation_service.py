@@ -175,10 +175,8 @@ class RotationService:
         except discord.HTTPException as exc:
             status.last_error = f"Discord API error: {exc.status}"
             LOGGER.exception("Discord API error during rotation")
-        except (
-            Exception
-        ) as exc:  # noqa: BLE001 - keep long-running task failures contained.
-            status.last_error = str(exc)
+        except Exception:  # noqa: BLE001 - keep long-running task failures contained.
+            status.last_error = "An unexpected internal error occurred."
             LOGGER.exception("Unexpected rotation failure")
         finally:
             # Move member back to original channel if they are still connected
