@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
@@ -47,7 +46,10 @@ class RotationCommands(commands.Cog):
         name="status", description="Show active voice rotations in this server."
     )
     @app_commands.guild_only()
+    @app_commands.default_permissions(move_members=True)
     async def status(self, interaction: discord.Interaction) -> None:
+        if not await self._can_manage_rotations(interaction):
+            return
         if interaction.guild is None:
             await self._send_error(
                 interaction, "This command can only be used in a server."
