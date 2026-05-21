@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
@@ -111,6 +110,14 @@ class RotationCommands(commands.Cog):
             ),
             SUCCESS_COLOR,
         )
+        LOGGER.info(
+            "AUDIT: User %s (ID: %s) started rotation for user %s (ID: %s) in guild %s",
+            interaction.user,
+            interaction.user.id,
+            user,
+            user.id,
+            interaction.guild.id,
+        )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(
@@ -138,6 +145,14 @@ class RotationCommands(commands.Cog):
 
         embed = build_embed(
             "Rotation Stopped", f"Stopped rotating {user.mention}.", SUCCESS_COLOR
+        )
+        LOGGER.info(
+            "AUDIT: User %s (ID: %s) stopped rotation for user %s (ID: %s) in guild %s",
+            interaction.user,
+            interaction.user.id,
+            user,
+            user.id,
+            interaction.guild.id,
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -174,6 +189,13 @@ class RotationCommands(commands.Cog):
             "Delay Updated",
             f"Rotation delay set to `{config.delay_seconds:.1f}s`.",
             SUCCESS_COLOR,
+        )
+        LOGGER.info(
+            "AUDIT: User %s (ID: %s) changed rotation delay to %.1fs in guild %s",
+            interaction.user,
+            interaction.user.id,
+            config.delay_seconds,
+            interaction.guild.id,
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -264,6 +286,15 @@ class RotationCommands(commands.Cog):
                 f"Mode: `{mode}`\nDelay: `{float(delay_seconds):.1f}s`"
             ),
             SUCCESS_COLOR,
+        )
+        LOGGER.info(
+            "AUDIT: User %s (ID: %s) set channels (%s), mode %s, delay %.1fs in guild %s",
+            interaction.user,
+            interaction.user.id,
+            ", ".join(str(c.id) for c in unique_channels),
+            mode,
+            float(delay_seconds),
+            interaction.guild.id,
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
