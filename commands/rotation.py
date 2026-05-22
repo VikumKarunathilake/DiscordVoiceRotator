@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
@@ -102,6 +101,8 @@ class RotationCommands(commands.Cog):
             await self._send_error(interaction, str(exc))
             return
 
+        LOGGER.info("AUDIT: User %s started rotation for %s", interaction.user, user)
+
         embed = build_embed(
             "Rotation Started",
             (
@@ -136,6 +137,8 @@ class RotationCommands(commands.Cog):
             )
             return
 
+        LOGGER.info("AUDIT: User %s stopped rotation for %s", interaction.user, user)
+
         embed = build_embed(
             "Rotation Stopped", f"Stopped rotating {user.mention}.", SUCCESS_COLOR
         )
@@ -169,6 +172,10 @@ class RotationCommands(commands.Cog):
 
         config.delay_seconds = float(seconds)
         await self.store.set_guild(config)
+
+        LOGGER.info(
+            "AUDIT: User %s updated rotation delay to %s", interaction.user, seconds
+        )
 
         embed = build_embed(
             "Delay Updated",
@@ -255,6 +262,14 @@ class RotationCommands(commands.Cog):
             mode=mode,
         )
         await self.store.set_guild(config)
+
+        LOGGER.info(
+            "AUDIT: User %s configured rotation channels (channels=%s, delay=%s, mode=%s)",
+            interaction.user,
+            len(unique_channels),
+            delay_seconds,
+            mode,
+        )
 
         channel_list = ", ".join(channel.mention for channel in unique_channels)
         embed = build_embed(
