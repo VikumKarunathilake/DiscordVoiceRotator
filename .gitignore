@@ -149,7 +149,6 @@ activemq-data/
 *.sage.py
 
 # Environments
-.env
 .envrc
 .venv
 env/
@@ -221,3 +220,5 @@ __marimo__/
 # DiscordVoiceRotator runtime data
 logs/*.log
 config/guilds.json
+config.bat
+node_modules
