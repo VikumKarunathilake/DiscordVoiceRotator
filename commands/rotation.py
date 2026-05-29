@@ -12,7 +12,6 @@ from discord.ext import commands
 from config.guild_config import (
     GuildRotationConfig,
     MIN_ROTATION_DELAY_SECONDS,
-    RotationMode,
 )
 from services.config_store import ConfigStore
 from services.rotation_service import RotationService, RotationStatus
@@ -102,6 +101,15 @@ class RotationCommands(commands.Cog):
             await self._send_error(interaction, str(exc))
             return
 
+        LOGGER.info(
+            "AUDIT: User %s (%s) started rotating user %s (%s) across %d channels",
+            interaction.user,
+            interaction.user.id,
+            user,
+            user.id,
+            len(config.channel_ids),
+        )
+
         embed = build_embed(
             "Rotation Started",
             (
@@ -136,6 +144,14 @@ class RotationCommands(commands.Cog):
             )
             return
 
+        LOGGER.info(
+            "AUDIT: User %s (%s) stopped rotating user %s (%s)",
+            interaction.user,
+            interaction.user.id,
+            user,
+            user.id,
+        )
+
         embed = build_embed(
             "Rotation Stopped", f"Stopped rotating {user.mention}.", SUCCESS_COLOR
         )
@@ -169,6 +185,14 @@ class RotationCommands(commands.Cog):
 
         config.delay_seconds = float(seconds)
         await self.store.set_guild(config)
+
+        LOGGER.info(
+            "AUDIT: User %s (%s) set rotation delay to %.1f in guild %s",
+            interaction.user,
+            interaction.user.id,
+            config.delay_seconds,
+            interaction.guild.id,
+        )
 
         embed = build_embed(
             "Delay Updated",
@@ -255,6 +279,16 @@ class RotationCommands(commands.Cog):
             mode=mode,
         )
         await self.store.set_guild(config)
+
+        LOGGER.info(
+            "AUDIT: User %s (%s) configured %d channels, mode '%s', delay %.1f in guild %s",
+            interaction.user,
+            interaction.user.id,
+            len(unique_channels),
+            mode,
+            float(delay_seconds),
+            interaction.guild.id,
+        )
 
         channel_list = ", ".join(channel.mention for channel in unique_channels)
         embed = build_embed(
