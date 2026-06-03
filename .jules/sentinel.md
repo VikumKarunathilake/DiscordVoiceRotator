@@ -1,0 +1,4 @@
+## 2024-05-14 - Python Dataclass Secret Exposure
+**Vulnerability:** The Discord bot token (`discord_token`) was stored in a Python dataclass (`Settings`) without `repr=False`. Dataclasses automatically generate a `__repr__` method that includes all fields by default, meaning printing the object or logging it could inadvertently expose the raw token to logs or output.
+**Learning:** Python dataclasses automatically generate representations that include sensitive data unless explicitly told not to. This is a common footgun for configuration objects that hold secrets alongside non-sensitive paths or settings.
+**Prevention:** When using Python dataclasses for configuration that includes sensitive data (e.g., tokens, API keys, database credentials), always use `field(repr=False)` on the sensitive fields to prevent accidental exposure in logs, error traces, or string representations.
