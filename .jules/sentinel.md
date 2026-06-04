@@ -1,0 +1,4 @@
+## 2025-02-23 - Prevent Sensitive Data Exposure in Dataclasses
+**Vulnerability:** A `discord_token` in `config/settings.py` was being stored in a standard python dataclass. This exposes sensitive configuration items, like api keys or bot tokens, when logged via string representations (e.g., `repr(settings)`) since all attributes are printed by default.
+**Learning:** Python dataclass `__repr__` methods automatically print all fields. When these contain tokens, API keys, or other sensitive configuration, any standard logger or print statement can accidentally leak critical secrets.
+**Prevention:** Use `dataclasses.field(repr=False)` for any field that contains sensitive credentials or configuration to ensure it is hidden from the `repr` output.
