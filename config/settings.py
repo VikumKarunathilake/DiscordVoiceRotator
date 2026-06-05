@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 class Settings:
     """Runtime settings for the bot process."""
 
-    discord_token: str
+    discord_token: str = field(repr=False)
     config_path: Path
     log_path: Path
 
